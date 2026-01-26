@@ -1,0 +1,37 @@
+# User settings
+xcuserdata/
+
+# Build products
+build/
+DerivedData/
+
+# App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# macOS
+.DS_Store
+
+# Xcode project files
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+*.xcworkspace/*
+!*.xcworkspace/contents.xcworkspacedata
+!*.xcworkspace/xcshareddata/
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+# SwiftUI Previews
+PreviewContent/
+
+# IDEs
+.vscode/
+.idea/
+
+# Backup files
+*~
