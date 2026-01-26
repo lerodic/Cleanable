@@ -5,7 +5,7 @@ struct KeyboardShortcut: Codable, Equatable {
     let keyCode: UInt16
     let modifierFlags: UInt
     
-    // Defaults to "⌃" + "⌥" + "⌘" + "L"
+    // Defaults to "Control" + "Option" + "Command" + "L"
     static var defaultShortcut: KeyboardShortcut {
         KeyboardShortcut(
             keyCode: 37,
