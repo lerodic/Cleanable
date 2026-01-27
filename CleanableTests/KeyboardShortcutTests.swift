@@ -12,11 +12,13 @@ struct KeyboardShortcutTests {
         #expect(shortcut.description == testCase.description)
     }
 
+    @MainActor
     @Test("Shortcuts with same values are equal", arguments: shortcutEqualityFixtures)
     func shortcutEquality(_ testCase: ShortcutEqualityCase) {
         #expect(testCase.shortcut1 == testCase.shortcut2)
     }
 
+    @MainActor
     @Test("Shortcuts with different values are not equal", arguments: shortcutInequalityFixtures)
     func shortcutInequality(_ testCase: ShortcutEqualityCase) {
         #expect(testCase.shortcut1 != testCase.shortcut2)
@@ -30,6 +32,7 @@ struct KeyboardShortcutTests {
         #expect(shortcut.keyCode == 37)
     }
 
+    @MainActor
     @Test("'matches' method correctly identifies matching events", arguments: matchesWithMatchingEventsFixtures)
     func matchesWithMatchingEvents(_ testCase: MatchesCase) {
         #expect(testCase.shortcut.matches(event: testCase.event))

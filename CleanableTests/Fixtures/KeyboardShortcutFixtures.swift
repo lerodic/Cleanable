@@ -97,7 +97,7 @@ let shortcutInequalityFixtures: [ShortcutEqualityCase] = [
     )
 ]
 
-struct MatchesCase {
+struct MatchesCase: @unchecked Sendable {
     let shortcut: KeyboardShortcut
     let event: NSEvent
 }

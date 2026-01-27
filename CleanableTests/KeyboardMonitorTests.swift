@@ -25,6 +25,7 @@ struct KeyboardMonitorTests {
         }
     }
     
+    @MainActor
     @Test(
         "Monitor initializes with correct shortcut",
         arguments: [
@@ -44,6 +45,7 @@ struct KeyboardMonitorTests {
         #expect(monitor.currentShortcut == shortcut)
     }
     
+    @MainActor
     @Test("Monitor can update shortcut", arguments: updateShortcutFixtures)
     func updateShortcut(_ testCase: UpdateShortcutCase) {
         let monitor = KeyboardMonitor(shortcut: testCase.initialShortcut)

@@ -15,7 +15,7 @@ let defaultEvent = NSEvent.keyEvent(
     keyCode: 37
 )!
 
-struct ExistingModifierCase {
+struct ExistingModifierCase: @unchecked Sendable {
     let event: NSEvent
     let shortcut: KeyboardShortcut
     let description: String
@@ -58,7 +58,7 @@ let existingModifierFixtures: [ExistingModifierCase] = [
     )
 ]
 
-struct MissingModifierCase {
+struct MissingModifierCase: @unchecked Sendable {
     let event: NSEvent
 }
 
