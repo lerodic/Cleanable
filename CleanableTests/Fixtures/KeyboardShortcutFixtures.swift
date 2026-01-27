@@ -96,3 +96,137 @@ let shortcutInequalityFixtures: [ShortcutEqualityCase] = [
         )
     )
 ]
+
+struct MatchesCase {
+    let shortcut: KeyboardShortcut
+    let event: NSEvent
+}
+
+let matchesWithMatchingEventsFixtures: [MatchesCase] = [
+    .init(
+        shortcut:
+        KeyboardShortcut(
+            keyCode: 37,
+            modifierFlags: UInt(NSEvent.ModifierFlags.command.rawValue | NSEvent.ModifierFlags.option.rawValue)
+        ),
+        event:
+        NSEvent.keyEvent(
+            with: .keyDown,
+            location: NSPoint.zero,
+            modifierFlags: [.command, .option],
+            timestamp: 0,
+            windowNumber: 0,
+            context: nil,
+            characters: "l",
+            charactersIgnoringModifiers: "l",
+            isARepeat: false,
+            keyCode: 37
+        )!
+    ),
+    .init(
+        shortcut:
+        KeyboardShortcut(
+            keyCode: 2,
+            modifierFlags: UInt(NSEvent.ModifierFlags.command.rawValue | NSEvent.ModifierFlags.option.rawValue | NSEvent.ModifierFlags.control.rawValue)
+        ),
+        event:
+        NSEvent.keyEvent(
+            with: .keyDown,
+            location: NSPoint.zero,
+            modifierFlags: [.command, .option, .control],
+            timestamp: 0,
+            windowNumber: 0,
+            context: nil,
+            characters: "d",
+            charactersIgnoringModifiers: "d",
+            isARepeat: false,
+            keyCode: 2
+        )!
+    ),
+    .init(
+        shortcut:
+        KeyboardShortcut(
+            keyCode: 32,
+            modifierFlags: UInt(NSEvent.ModifierFlags.shift.rawValue)
+        ),
+        event:
+        NSEvent.keyEvent(
+            with: .keyDown,
+            location: NSPoint.zero,
+            modifierFlags: [.shift],
+            timestamp: 0,
+            windowNumber: 0,
+            context: nil,
+            characters: "u",
+            charactersIgnoringModifiers: "u",
+            isARepeat: false,
+            keyCode: 32
+        )!
+    )
+]
+
+let matchesWithNonMatchingEventsFixtures: [MatchesCase] = [
+    // different keyCodes; "l" vs "k"
+    .init(
+        shortcut:
+        KeyboardShortcut(
+            keyCode: 37,
+            modifierFlags: UInt(NSEvent.ModifierFlags.command.rawValue | NSEvent.ModifierFlags.option.rawValue)
+        ),
+        event:
+        NSEvent.keyEvent(
+            with: .keyDown,
+            location: NSPoint.zero,
+            modifierFlags: [.command, .option],
+            timestamp: 0,
+            windowNumber: 0,
+            context: nil,
+            characters: "k",
+            charactersIgnoringModifiers: "k",
+            isARepeat: false,
+            keyCode: 40
+        )!
+    ),
+    // missing 'control' modifier
+    .init(
+        shortcut:
+        KeyboardShortcut(
+            keyCode: 2,
+            modifierFlags: UInt(NSEvent.ModifierFlags.command.rawValue | NSEvent.ModifierFlags.option.rawValue | NSEvent.ModifierFlags.control.rawValue)
+        ),
+        event:
+        NSEvent.keyEvent(
+            with: .keyDown,
+            location: NSPoint.zero,
+            modifierFlags: [.command, .option],
+            timestamp: 0,
+            windowNumber: 0,
+            context: nil,
+            characters: "d",
+            charactersIgnoringModifiers: "d",
+            isARepeat: false,
+            keyCode: 2
+        )!
+    ),
+    // contains additional modifier: 'option'
+    .init(
+        shortcut:
+        KeyboardShortcut(
+            keyCode: 32,
+            modifierFlags: UInt(NSEvent.ModifierFlags.shift.rawValue)
+        ),
+        event:
+        NSEvent.keyEvent(
+            with: .keyDown,
+            location: NSPoint.zero,
+            modifierFlags: [.shift, .option],
+            timestamp: 0,
+            windowNumber: 0,
+            context: nil,
+            characters: "u",
+            charactersIgnoringModifiers: "u",
+            isARepeat: false,
+            keyCode: 32
+        )!
+    )
+]

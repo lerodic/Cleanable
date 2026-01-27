@@ -29,4 +29,14 @@ struct KeyboardShortcutTests {
         #expect(shortcut.description == "⌃⌥⌘L")
         #expect(shortcut.keyCode == 37)
     }
+
+    @Test("'matches' method correctly identifies matching events", arguments: matchesWithMatchingEventsFixtures)
+    func matchesWithMatchingEvents(_ testCase: MatchesCase) {
+        #expect(testCase.shortcut.matches(event: testCase.event))
+    }
+
+    @Test("'matches' method correctly identifies non-matching events", arguments: matchesWithNonMatchingEventsFixtures)
+    func matchesWithNonMatchingEvents(_ testCase: MatchesCase) {
+        #expect(!testCase.shortcut.matches(event: testCase.event))
+    }
 }
