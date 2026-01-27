@@ -77,4 +77,15 @@ struct KeyboardShortcut: Codable, Equatable {
         
         return keyMap[keyCode]
     }
+    
+    func matches(event: NSEvent) -> Bool {
+        let modifiers = UInt(event.modifierFlags.rawValue) & UInt(
+            NSEvent.ModifierFlags.command.rawValue |
+                NSEvent.ModifierFlags.option.rawValue |
+                NSEvent.ModifierFlags.control.rawValue |
+                NSEvent.ModifierFlags.shift.rawValue
+        )
+        
+        return event.keyCode == keyCode && modifiers == modifierFlags
+    }
 }
