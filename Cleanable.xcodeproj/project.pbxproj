@@ -6,15 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		33FFEF042F27C037009C2B02 /* ViewInspector in Frameworks */ = {isa = PBXBuildFile; productRef = 33FFEF032F27C037009C2B02 /* ViewInspector */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		3302F50F2F27671E0026EE18 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3302F4F92F27671C0026EE18 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 3302F5002F27671C0026EE18;
-			remoteInfo = Cleanable;
-		};
-		3302F5192F27671E0026EE18 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3302F4F92F27671C0026EE18 /* Project object */;
 			proxyType = 1;
@@ -26,7 +23,6 @@
 /* Begin PBXFileReference section */
 		3302F5012F27671C0026EE18 /* Cleanable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cleanable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3302F50E2F27671E0026EE18 /* CleanableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CleanableTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		3302F5182F27671E0026EE18 /* CleanableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CleanableUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -38,11 +34,6 @@
 		3302F5112F27671E0026EE18 /* CleanableTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = CleanableTests;
-			sourceTree = "<group>";
-		};
-		3302F51B2F27671E0026EE18 /* CleanableUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = CleanableUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -59,13 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3302F5152F27671E0026EE18 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				33FFEF042F27C037009C2B02 /* ViewInspector in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,7 +62,6 @@
 			children = (
 				3302F5032F27671C0026EE18 /* Cleanable */,
 				3302F5112F27671E0026EE18 /* CleanableTests */,
-				3302F51B2F27671E0026EE18 /* CleanableUITests */,
 				3302F5022F27671C0026EE18 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -87,7 +71,6 @@
 			children = (
 				3302F5012F27671C0026EE18 /* Cleanable.app */,
 				3302F50E2F27671E0026EE18 /* CleanableTests.xctest */,
-				3302F5182F27671E0026EE18 /* CleanableUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -135,33 +118,11 @@
 			);
 			name = CleanableTests;
 			packageProductDependencies = (
+				33FFEF032F27C037009C2B02 /* ViewInspector */,
 			);
 			productName = CleanableTests;
 			productReference = 3302F50E2F27671E0026EE18 /* CleanableTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		3302F5172F27671E0026EE18 /* CleanableUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 3302F5282F27671E0026EE18 /* Build configuration list for PBXNativeTarget "CleanableUITests" */;
-			buildPhases = (
-				3302F5142F27671E0026EE18 /* Sources */,
-				3302F5152F27671E0026EE18 /* Frameworks */,
-				3302F5162F27671E0026EE18 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				3302F51A2F27671E0026EE18 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				3302F51B2F27671E0026EE18 /* CleanableUITests */,
-			);
-			name = CleanableUITests;
-			packageProductDependencies = (
-			);
-			productName = CleanableUITests;
-			productReference = 3302F5182F27671E0026EE18 /* CleanableUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
@@ -180,10 +141,6 @@
 						CreatedOnToolsVersion = 26.2;
 						TestTargetID = 3302F5002F27671C0026EE18;
 					};
-					3302F5172F27671E0026EE18 = {
-						CreatedOnToolsVersion = 26.2;
-						TestTargetID = 3302F5002F27671C0026EE18;
-					};
 				};
 			};
 			buildConfigurationList = 3302F4FC2F27671C0026EE18 /* Build configuration list for PBXProject "Cleanable" */;
@@ -195,6 +152,9 @@
 			);
 			mainGroup = 3302F4F82F27671C0026EE18;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				33FFEF022F27C037009C2B02 /* XCRemoteSwiftPackageReference "ViewInspector" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3302F5022F27671C0026EE18 /* Products */;
 			projectDirPath = "";
@@ -202,7 +162,6 @@
 			targets = (
 				3302F5002F27671C0026EE18 /* Cleanable */,
 				3302F50D2F27671E0026EE18 /* CleanableTests */,
-				3302F5172F27671E0026EE18 /* CleanableUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -216,13 +175,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		3302F50C2F27671E0026EE18 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3302F5162F27671E0026EE18 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -246,13 +198,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3302F5142F27671E0026EE18 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -260,11 +205,6 @@
 			isa = PBXTargetDependency;
 			target = 3302F5002F27671C0026EE18 /* Cleanable */;
 			targetProxy = 3302F50F2F27671E0026EE18 /* PBXContainerItemProxy */;
-		};
-		3302F51A2F27671E0026EE18 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 3302F5002F27671C0026EE18 /* Cleanable */;
-			targetProxy = 3302F5192F27671E0026EE18 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -408,6 +348,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.rodich.Cleanable;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -440,6 +381,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.rodich.Cleanable;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -495,44 +437,6 @@
 			};
 			name = Release;
 		};
-		3302F5292F27671E0026EE18 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B99STG74F5;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = me.rodich.CleanableUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = Cleanable;
-			};
-			name = Debug;
-		};
-		3302F52A2F27671E0026EE18 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B99STG74F5;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = me.rodich.CleanableUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = Cleanable;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -563,16 +467,26 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3302F5282F27671E0026EE18 /* Build configuration list for PBXNativeTarget "CleanableUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				3302F5292F27671E0026EE18 /* Debug */,
-				3302F52A2F27671E0026EE18 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		33FFEF022F27C037009C2B02 /* XCRemoteSwiftPackageReference "ViewInspector" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nalexn/ViewInspector.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.10.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		33FFEF032F27C037009C2B02 /* ViewInspector */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 33FFEF022F27C037009C2B02 /* XCRemoteSwiftPackageReference "ViewInspector" */;
+			productName = ViewInspector;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3302F4F92F27671C0026EE18 /* Project object */;
 }
