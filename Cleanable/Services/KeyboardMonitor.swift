@@ -30,7 +30,9 @@ class KeyboardMonitor {
     init(shortcut: KeyboardShortcut) {
         currentShortcut = shortcut
         
-        startMonitoring()
+        if AXIsProcessTrusted() {
+            startMonitoring()
+        }
     }
     
     deinit {
@@ -49,7 +51,7 @@ class KeyboardMonitor {
         eventTap = makeEventTap()
         
         guard let eventTap else {
-            return assertionFailure("Failed to create event type")
+            return print("Failed to create event tap.")
         }
         
         enableEventTap(eventTap)

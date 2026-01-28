@@ -12,7 +12,7 @@ class LockViewModel: ObservableObject {
     var onStateChange: ((Bool) -> Void)?
     var onShortcutChange: (() -> Void)?
     
-    private let keyboardMonitor: KeyboardMonitor
+    private var keyboardMonitor: KeyboardMonitor?
     private let shortcutRecorder: ShortcutRecorder
     
     var shortcutDescription: String {
@@ -23,11 +23,18 @@ class LockViewModel: ObservableObject {
         let shortcut = Self.initShortcut()
         
         currentShortcut = shortcut
-        keyboardMonitor = KeyboardMonitor(shortcut: shortcut)
         shortcutRecorder = ShortcutRecorder()
         
-        keyboardMonitor.delegate = self
+        if AXIsProcessTrusted() {
+            keyboardMonitor = KeyboardMonitor(shortcut: shortcut)
+            keyboardMonitor?.delegate = self
+        }
+        
         shortcutRecorder.delegate = self
+    }
+    
+    deinit {
+        keyboardMonitor = nil
     }
     
     private static func initShortcut() -> KeyboardShortcut {
@@ -58,7 +65,7 @@ class LockViewModel: ObservableObject {
     
     func updateShortcut(_ shortcut: KeyboardShortcut) {
         currentShortcut = shortcut
-        keyboardMonitor.updateShortcut(shortcut)
+        keyboardMonitor?.updateShortcut(shortcut)
         saveShortcut(shortcut)
         onShortcutChange?()
     }
