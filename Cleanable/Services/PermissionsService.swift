@@ -2,7 +2,7 @@ import AppKit
 import Combine
 import Foundation
 
-class PermissionsService {
+class PermissionsService: @unchecked Sendable {
     static let accessibilitySettingsUrl = "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
     
     var hasAccessibilityPermissions: () -> Bool = {
