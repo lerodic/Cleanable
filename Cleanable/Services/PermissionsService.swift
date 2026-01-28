@@ -1,6 +1,6 @@
 import AppKit
-import Combine
 import Foundation
+import SwiftUI
 
 class PermissionsService: @unchecked Sendable {
     static let accessibilitySettingsUrl = "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
@@ -13,9 +13,29 @@ class PermissionsService: @unchecked Sendable {
         NSWorkspace.shared.open(url)
     }
     
-    var showAlert: (NSAlert) -> NSApplication.ModalResponse = { alert in
-        alert.runModal()
+    var createWindow: (NSRect, NSWindow.StyleMask, String) -> NSWindow = { rect, styleMask, title in
+        let window = NSWindow(
+            contentRect: rect,
+            styleMask: styleMask,
+            backing: .buffered,
+            defer: false
+        )
+        
+        window.title = title
+        window.center()
+        window.isReleasedWhenClosed = false
+        window.level = .floating
+        
+        return window
     }
+    
+    var showWindow: (NSWindow) -> Void = { window in
+        window.center()
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+    
+    private var permissionWindow: NSWindow?
     
     func requestPermissions() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -26,35 +46,45 @@ class PermissionsService: @unchecked Sendable {
     }
     
     func showAccessibilityAlert() {
-        let alert = makeAccessibilityAlert()
-        
-        if showAlert(alert) == .alertFirstButtonReturn {
-            openSettingsPanel(at: PermissionsService.accessibilitySettingsUrl)
+        if permissionWindow == nil {
+            permissionWindow = createPermissionWindow()
         }
+        
+        guard let window = permissionWindow else { return }
+        
+        showWindow(window)
     }
     
-    func makeAccessibilityAlert() -> NSAlert {
-        let alert = NSAlert()
+    private func createPermissionWindow() -> NSWindow {
+        let window = createWindow(
+            NSRect(x: 0, y: 0, width: 480, height: 400),
+            [.titled, .closable],
+            "Permission Required"
+        )
         
-        alert.messageText = "Accessibility permission required"
-        alert.informativeText =
-            """
-            Cleanable needs Accessibility permission to monitor keyboard shortcuts
-            and control keyboard input.
-            
-            Please enable it in:
-            System Settings → Privacy & Security → Accessibility
-            """
-        alert.alertStyle = .warning
-        alert.addButton(withTitle: "Open System Settings")
-        alert.addButton(withTitle: "Later")
+        let permissionView = AccessibilityPermissionView(
+            onOpenSettings: { [weak self] in
+                self?.openSettingsPanel(at: PermissionsService.accessibilitySettingsUrl)
+                self?.permissionWindow?.close()
+            }, onDismiss: { [weak self] in
+                self?.permissionWindow?.close()
+            }
+        )
         
-        return alert
+        window.contentView = NSHostingView(rootView: permissionView)
+        
+        return window
     }
     
-    private func openSettingsPanel(at urlSchema: String) {
-        if let url = URL(string: urlSchema) {
+    func openSettingsPanel(at urlSchema: String) {
+        guard let url = URL(string: urlSchema) else { return }
+        
+        if isValidSettingsURL(url) {
             openWorkspace(url)
         }
+    }
+    
+    private func isValidSettingsURL(_ url: URL) -> Bool {
+        return url.absoluteString.starts(with: "x-apple.systempreferences")
     }
 }

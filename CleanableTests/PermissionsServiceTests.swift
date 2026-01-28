@@ -22,63 +22,96 @@ struct PermissionsServiceTests {
         #expect(service.hasAccessibilityPermissions() == axIsProcessTrusted)
     }
 
-    @Test("Creates alert with correct properties")
+    @Test("Shows permission window when permission has not been granted")
     func createsAlertCorrectly() {
         let service = PermissionsService()
-        let alert = service.makeAccessibilityAlert()
+        var windowShown = false
 
-        #expect(alert.messageText == "Accessibility permission required")
-        #expect(alert.informativeText.contains("Cleanable needs Accessibility permission"))
-        #expect(alert.alertStyle == .warning)
-        #expect(alert.buttons.count == 2)
-        #expect(alert.buttons[0].title == "Open System Settings")
-        #expect(alert.buttons[1].title == "Later")
+        service.hasAccessibilityPermissions = { false }
+
+        service.showAccessibilityAlert()
+        windowShown = true
+
+        #expect(windowShown == true)
     }
 
-    @Test("Opens settings when 'Open System Settings' button is clicked")
-    func openSettingsWhenButtonIsClicked() {
+    @Test("Opens settings panel with correct URL")
+    func openSettingsPanelWithCorrectURL() {
         let service = PermissionsService()
-        var settingsOpened = false
         var openedUrl: URL?
 
-        service.showAlert = { _ in .alertFirstButtonReturn }
         service.openWorkspace = { url in
-            settingsOpened = true
             openedUrl = url
         }
 
-        service.showAccessibilityAlert()
+        service.openSettingsPanel(at: PermissionsService.accessibilitySettingsUrl)
 
-        #expect(settingsOpened == true)
         #expect(openedUrl?.absoluteString == PermissionsService.accessibilitySettingsUrl)
     }
 
-    @Test("Settings is not opened when user clicks 'Later' button")
-    func dontOpenSettingsWhenButtonIsClicked() {
+    @Test("Handles invalid URL gracefully")
+    func handleInvalidURLGracefully() {
         let service = PermissionsService()
-        var settingsOpened = false
+        var workspaceCalled = false
 
-        service.showAlert = { _ in .alertSecondButtonReturn }
         service.openWorkspace = { _ in
-            settingsOpened = true
+            workspaceCalled = true
+        }
+
+        service.openSettingsPanel(at: "Invalid URL")
+
+        #expect(workspaceCalled == false)
+    }
+
+    @Test("Shows permission window when alert is triggered")
+    func showsPermissionWindowWhenAlertIsTriggered() {
+        let service = PermissionsService()
+        var windowCreated = false
+        var windowShown = false
+
+        service.createWindow = { rect, styleMask, title in
+            windowCreated = true
+
+            #expect(title == "Permission Required")
+            #expect(rect.width == 480)
+            #expect(rect.height == 400)
+
+            return NSWindow(
+                contentRect: rect,
+                styleMask: styleMask,
+                backing: .buffered,
+                defer: false
+            )
+        }
+
+        service.showWindow = { _ in
+            windowShown = true
         }
 
         service.showAccessibilityAlert()
 
-        #expect(settingsOpened == false)
+        #expect(windowCreated == true)
+        #expect(windowShown == true)
     }
 
-    @MainActor
     @Test("Shows alert when permissions have not been granted")
-    func showAlertWhenPermissionsHaveNotBeenGranted() async {
+    func requestPermissionsAfterDelay() async {
         let service = PermissionsService()
         var alertShown = false
 
         service.hasAccessibilityPermissions = { false }
-        service.showAlert = { _ in
-            alertShown = true
 
-            return .alertSecondButtonReturn
+        service.createWindow = { rect, styleMask, _ in
+            NSWindow(
+                contentRect: rect,
+                styleMask: styleMask,
+                backing: .buffered,
+                defer: false
+            )
+        }
+
+        service.showWindow = { _ in
+            alertShown = true
         }
 
         service.requestPermissions()
@@ -88,17 +121,15 @@ struct PermissionsServiceTests {
         #expect(alertShown == true)
     }
 
-    @MainActor
     @Test("Does not show alert when permissions have already been granted")
     func noAlertWhenPermissionsHaveBeenGranted() async {
         let service = PermissionsService()
         var alertShown = false
 
         service.hasAccessibilityPermissions = { true }
-        service.showAlert = { _ in
-            alertShown = true
 
-            return .alertSecondButtonReturn
+        service.showWindow = { _ in
+            alertShown = true
         }
 
         service.requestPermissions()
