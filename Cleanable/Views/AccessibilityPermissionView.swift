@@ -5,17 +5,15 @@ struct AccessibilityPermissionView: View {
     let onDismiss: () -> Void
 
     @State private var isAnimating = false
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        VStack(spacing: 24) {
-            AppIconSection(isAnimating: $isAnimating)
-            messageSection
-            InstructionsSection()
-            buttonSection
-        }
-        .padding(32)
-        .frame(width: 480)
-        .background(Color(NSColor.windowBackgroundColor))
+        AccessibilityPermissionContent(
+            isAnimating: $isAnimating,
+            colorScheme: colorScheme,
+            onOpenSettings: onOpenSettings,
+            onDismiss: onDismiss
+        )
         .onAppear {
             withAnimation(
                 .easeInOut(duration: 0.6)
@@ -25,10 +23,32 @@ struct AccessibilityPermissionView: View {
             }
         }
     }
+}
+
+struct AccessibilityPermissionContent: View {
+    @Binding var isAnimating: Bool
+    let colorScheme: ColorScheme
+    let onOpenSettings: () -> Void
+    let onDismiss: () -> Void
+
+    var body: some View {
+        VStack(spacing: 24) {
+            AppIconSection(
+                isAnimating: $isAnimating,
+                colorScheme: colorScheme
+            )
+            messageSection
+            InstructionsSection()
+            buttonSection
+        }
+        .padding(32)
+        .frame(width: 480)
+        .background(Color(NSColor.windowBackgroundColor))
+    }
 
     struct AppIconSection: View {
         @Binding var isAnimating: Bool
-        @Environment(\.colorScheme) private var colorScheme
+        let colorScheme: ColorScheme
 
         var shapeFillOpacity: Double {
             colorScheme == .dark ? 0.5 : 0.1
