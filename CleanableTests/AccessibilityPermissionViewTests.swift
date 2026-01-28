@@ -8,7 +8,9 @@ import ViewInspector
 struct AccessibilityPermissionViewTests {
     @Test("Displays correct title text")
     func displayCorrectTitle() throws {
-        let view = AccessibilityPermissionView(
+        let view = AccessibilityPermissionContent(
+            isAnimating: .constant(false),
+            colorScheme: .dark,
             onOpenSettings: {},
             onDismiss: {}
         )
@@ -21,7 +23,9 @@ struct AccessibilityPermissionViewTests {
     
     @Test("Displays correct description text")
     func displayCorrectDescription() throws {
-        let view = AccessibilityPermissionView(
+        let view = AccessibilityPermissionContent(
+            isAnimating: .constant(false),
+            colorScheme: .dark,
             onOpenSettings: {},
             onDismiss: {}
         )
@@ -34,7 +38,9 @@ struct AccessibilityPermissionViewTests {
     
     @Test("Has correct set of buttons")
     func correctSetOfButtons() throws {
-        let view = AccessibilityPermissionView(
+        let view = AccessibilityPermissionContent(
+            isAnimating: .constant(false),
+            colorScheme: .dark,
             onOpenSettings: {},
             onDismiss: {}
         )
@@ -51,8 +57,10 @@ struct AccessibilityPermissionViewTests {
     @Test("Tapping button triggers callback", arguments: ["Open System Settings", "Later"])
     func tappingButtonTriggersCallback(_ buttonText: String) throws {
         var callbackCalled = false
-        let view = AccessibilityPermissionView(
-            onOpenSettings: {},
+        let view = AccessibilityPermissionContent(
+            isAnimating: .constant(false),
+            colorScheme: .dark,
+            onOpenSettings: { callbackCalled = true },
             onDismiss: { callbackCalled = true }
         )
         
@@ -64,7 +72,9 @@ struct AccessibilityPermissionViewTests {
     
     @Test("Instructions section contains correct entries")
     func instructionsSectionContainsCorrectEntries() throws {
-        let view = AccessibilityPermissionView(
+        let view = AccessibilityPermissionContent(
+            isAnimating: .constant(false),
+            colorScheme: .dark,
             onOpenSettings: {},
             onDismiss: {}
         )
