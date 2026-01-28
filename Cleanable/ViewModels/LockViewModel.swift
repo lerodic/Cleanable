@@ -2,7 +2,7 @@ import AppKit
 import Combine
 import Foundation
 
-class LockViewModel: ObservableObject {
+class LockViewModel: ObservableObject, @unchecked Sendable {
     @Published private(set) var isLocked: Bool = false
     @Published var recordedShortcut: KeyboardShortcut?
     @Published private(set) var currentShortcut: KeyboardShortcut
