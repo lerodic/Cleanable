@@ -76,6 +76,28 @@ class PermissionsService: @unchecked Sendable {
         showWindow(window)
     }
     
+    private func createPermissionWindow() -> NSWindow {
+        let window = createWindow(
+            NSRect(x: 0, y: 0, width: 480, height: 400),
+            [.titled, .closable],
+            "Permission Required"
+        )
+        
+        let permissionView = AccessibilityPermissionView(
+            onOpenSettings: { [weak self] in
+                self?.openSettingsPanel(at: PermissionsService.accessibilitySettingsUrl)
+                self?.permissionWindow?.close()
+            }, onDismiss: { [weak self] in
+                self?.permissionWindow?.close()
+                self?.quitApp()
+            }
+        )
+        
+        window.contentView = NSHostingView(rootView: permissionView)
+        
+        return window
+    }
+    
     func showRestartAlert() {
         if let permissionWindow {
             closeWindow(permissionWindow)
@@ -107,28 +129,6 @@ class PermissionsService: @unchecked Sendable {
         )
         
         window.contentView = NSHostingView(rootView: restartView)
-        
-        return window
-    }
-    
-    private func createPermissionWindow() -> NSWindow {
-        let window = createWindow(
-            NSRect(x: 0, y: 0, width: 480, height: 400),
-            [.titled, .closable],
-            "Permission Required"
-        )
-        
-        let permissionView = AccessibilityPermissionView(
-            onOpenSettings: { [weak self] in
-                self?.openSettingsPanel(at: PermissionsService.accessibilitySettingsUrl)
-                self?.permissionWindow?.close()
-            }, onDismiss: { [weak self] in
-                self?.permissionWindow?.close()
-                self?.quitApp()
-            }
-        )
-        
-        window.contentView = NSHostingView(rootView: permissionView)
         
         return window
     }
