@@ -2,30 +2,31 @@ import AppKit
 import SwiftUI
 
 class AppDelegate: NSObject, NSApplicationDelegate {
+    private var timerScheduler: TimerScheduler
     private var permissionsService: PermissionsService
     private var viewModelFactory: () -> LockViewModel
     
     private(set) var statusItem: NSStatusItem?
     private var viewModel: LockViewModel?
     private var shortcutWindow: NSWindow?
-    
-    var distributedNotificationCenter: DistributedNotificationCenter {
-        DistributedNotificationCenter.default()
-    }
+    private var accessibilityPollTimer: Timer?
     
     override init() {
         self.permissionsService = PermissionsService()
         self.viewModelFactory = { LockViewModel() }
+        self.timerScheduler = SystemTimerScheduler()
         super.init()
     }
     
     convenience init(
         permissionsService: PermissionsService = PermissionsService(),
-        viewModelFactory: @escaping () -> LockViewModel = { LockViewModel() }
+        viewModelFactory: @escaping () -> LockViewModel = { LockViewModel() },
+        timerScheduler: TimerScheduler = SystemTimerScheduler()
     ) {
         self.init()
         self.permissionsService = permissionsService
         self.viewModelFactory = viewModelFactory
+        self.timerScheduler = timerScheduler
     }
     
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -37,7 +38,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             setupMenu()
         } else {
             permissionsService.requestPermissions()
-            observeAccessibilityChanges()
+            startAccessibilityPolling()
         }
     }
     
@@ -150,25 +151,38 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         shortcutWindow = window
     }
     
-    func observeAccessibilityChanges() {
-        distributedNotificationCenter.addObserver(
-            self,
-            selector: #selector(accessibilitySettingsChanged),
-            name: NSNotification.Name("com.apple.accessibility.api"),
-            object: nil
-        )
-    }
-    
-    @objc private func accessibilitySettingsChanged() {
-        if permissionsService.hasAccessibilityPermissions() {
-            distributedNotificationCenter.removeObserver(
-                self,
-                name: NSNotification.Name("com.apple.accessibility.api"),
-                object: nil
-            )
+    func startAccessibilityPolling() {
+        accessibilityPollTimer = timerScheduler.schedule(
+            interval: 1.0,
+            repeats: true
+        ) { [weak self] _ in
+            guard let self = self else { return }
             
-            initializeViewModel()
-            setupMenu()
+            if self.permissionsService.hasAccessibilityPermissions() {
+                self.accessibilityPollTimer?.invalidate()
+                self.accessibilityPollTimer = nil
+                
+                self.permissionsService.showRestartAlert()
+            }
         }
+    }
+}
+
+protocol TimerScheduler {
+    @discardableResult
+    func schedule(
+        interval: TimeInterval,
+        repeats: Bool,
+        _ block: @escaping (Timer) -> Void
+    ) -> Timer
+}
+
+class SystemTimerScheduler: TimerScheduler {
+    func schedule(interval: TimeInterval, repeats: Bool, _ block: @escaping (Timer) -> Void) -> Timer {
+        Timer.scheduledTimer(
+            withTimeInterval: interval,
+            repeats: repeats,
+            block: block
+        )
     }
 }
