@@ -138,4 +138,94 @@ struct PermissionsServiceTests {
 
         #expect(alertShown == false)
     }
+
+    @Test("Shows restart window when restart alert is triggered")
+    func showsRestartWindow() {
+        let service = PermissionsService()
+        var windowCreated = false
+        var windowShown = false
+
+        service.createWindow = { rect, styleMask, title in
+            windowCreated = true
+
+            #expect(title == "Restart Required")
+            #expect(rect.width == 400)
+            #expect(rect.height == 280)
+
+            return NSWindow(
+                contentRect: rect,
+                styleMask: styleMask,
+                backing: .buffered,
+                defer: false
+            )
+        }
+
+        service.showWindow = { _ in
+            windowShown = true
+        }
+
+        service.showRestartAlert()
+
+        #expect(windowCreated == true)
+        #expect(windowShown == true)
+    }
+
+    @Test("Restart alert closes permission window")
+    func closePermissionWindow() {
+        let service = PermissionsService()
+        var permissionClosed = false
+        let fakePermissionWindow = NSWindow()
+
+        service.closeWindow = { window in
+            if window === fakePermissionWindow {
+                permissionClosed = true
+            }
+        }
+
+        service.createWindow = { rect, styleMask, title in
+            title == "Permission Required"
+                ? fakePermissionWindow
+                : NSWindow(
+                    contentRect: rect,
+                    styleMask: styleMask,
+                    backing: .buffered,
+                    defer: false
+                )
+        }
+
+        service.showWindow = { _ in }
+
+        service.showAccessibilityAlert()
+        service.showRestartAlert()
+
+        #expect(permissionClosed == true)
+    }
+
+    @Test("Restart intent triggers app restart")
+    func triggerAppRestart() {
+        let service = PermissionsService()
+        var didRestart = false
+
+        service.restartApp = {
+            didRestart = true
+        }
+
+        service.userRequestedRestart()
+
+        #expect(didRestart == true)
+    }
+
+    @Test("Quit intent triggers app quit")
+    func triggerAppQuit() {
+        let service = PermissionsService()
+        var didQuit = false
+
+        service.quitApp = {
+            didQuit = true
+        }
+
+        service.userRequestedQuit()
+
+        #expect(didQuit == true)
+    }
 }
