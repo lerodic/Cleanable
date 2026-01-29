@@ -13,6 +13,22 @@ class PermissionsService: @unchecked Sendable {
         NSWorkspace.shared.open(url)
     }
     
+    var restartApp: () -> Void = {
+        let task = Process()
+        task.launchPath = "/usr/bin/open"
+        task.arguments = [
+            "-n",
+            Bundle.main.bundlePath
+        ]
+        task.launch()
+        
+        NSApp.terminate(nil)
+    }
+    
+    var quitApp: () -> Void = {
+        NSApp.terminate(nil)
+    }
+    
     var createWindow: (NSRect, NSWindow.StyleMask, String) -> NSWindow = { rect, styleMask, title in
         let window = NSWindow(
             contentRect: rect,
@@ -35,7 +51,12 @@ class PermissionsService: @unchecked Sendable {
         NSApp.activate(ignoringOtherApps: true)
     }
     
+    var closeWindow: (NSWindow) -> Void = { window in
+        window.close()
+    }
+    
     private var permissionWindow: NSWindow?
+    private var restartWindow: NSWindow?
     
     func requestPermissions() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -55,6 +76,41 @@ class PermissionsService: @unchecked Sendable {
         showWindow(window)
     }
     
+    func showRestartAlert() {
+        if let permissionWindow {
+            closeWindow(permissionWindow)
+        }
+        
+        if restartWindow == nil {
+            restartWindow = createRestartWindow()
+        }
+        
+        guard let window = restartWindow else { return }
+        
+        showWindow(window)
+    }
+    
+    private func createRestartWindow() -> NSWindow {
+        let window = createWindow(
+            NSRect(x: 0, y: 0, width: 400, height: 280),
+            [.titled],
+            "Restart Required"
+        )
+        
+        let restartView = RequireRestartView(
+            onRestart: { [weak self] in
+                self?.userRequestedRestart()
+            },
+            onQuit: { [weak self] in
+                self?.userRequestedQuit()
+            }
+        )
+        
+        window.contentView = NSHostingView(rootView: restartView)
+        
+        return window
+    }
+    
     private func createPermissionWindow() -> NSWindow {
         let window = createWindow(
             NSRect(x: 0, y: 0, width: 480, height: 400),
@@ -68,6 +124,7 @@ class PermissionsService: @unchecked Sendable {
                 self?.permissionWindow?.close()
             }, onDismiss: { [weak self] in
                 self?.permissionWindow?.close()
+                self?.quitApp()
             }
         )
         
@@ -86,5 +143,13 @@ class PermissionsService: @unchecked Sendable {
     
     private func isValidSettingsURL(_ url: URL) -> Bool {
         return url.absoluteString.starts(with: "x-apple.systempreferences")
+    }
+    
+    func userRequestedRestart() {
+        restartApp()
+    }
+    
+    func userRequestedQuit() {
+        quitApp()
     }
 }
