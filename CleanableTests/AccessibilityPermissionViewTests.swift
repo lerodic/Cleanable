@@ -60,8 +60,8 @@ struct AccessibilityPermissionViewTests {
         let view = AccessibilityPermissionContent(
             isAnimating: .constant(false),
             colorScheme: .dark,
-            onOpenSettings: { callbackCalled = true },
-            onDismiss: { callbackCalled = true }
+            onOpenSettings: { if buttonText == "Open System Settings" { callbackCalled = true } },
+            onDismiss: { if buttonText == "Later" { callbackCalled = true } }
         )
         
         let button = try view.inspect().find(button: buttonText)
