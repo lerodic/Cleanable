@@ -5,6 +5,8 @@ import SwiftUI
 class PermissionsService: @unchecked Sendable {
     static let accessibilitySettingsUrl = "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
     
+    private let presenter: WindowPresenter
+    
     var hasAccessibilityPermissions: () -> Bool = {
         AXIsProcessTrusted()
     }
@@ -13,29 +15,25 @@ class PermissionsService: @unchecked Sendable {
         NSWorkspace.shared.open(url)
     }
     
-    var createWindow: (NSRect, NSWindow.StyleMask, String) -> NSWindow = { rect, styleMask, title in
-        let window = NSWindow(
-            contentRect: rect,
-            styleMask: styleMask,
-            backing: .buffered,
-            defer: false
-        )
-        
-        window.title = title
-        window.center()
-        window.isReleasedWhenClosed = false
-        window.level = .floating
-        
-        return window
+    var quitApp: () -> Void = {
+        NSApp.terminate(nil)
     }
     
-    var showWindow: (NSWindow) -> Void = { window in
-        window.center()
-        window.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
+    var restartApp: () -> Void = {
+        let task = Process()
+        task.launchPath = "/usr/bin/open"
+        task.arguments = [
+            "-n",
+            Bundle.main.bundlePath
+        ]
+        task.launch()
+        
+        NSApp.terminate(nil)
     }
     
-    private var permissionWindow: NSWindow?
+    init(presenter: WindowPresenter = WindowPresenter()) {
+        self.presenter = presenter
+    }
     
     func requestPermissions() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -46,34 +44,29 @@ class PermissionsService: @unchecked Sendable {
     }
     
     func showAccessibilityAlert() {
-        if permissionWindow == nil {
-            permissionWindow = createPermissionWindow()
-        }
-        
-        guard let window = permissionWindow else { return }
-        
-        showWindow(window)
-    }
-    
-    private func createPermissionWindow() -> NSWindow {
-        let window = createWindow(
-            NSRect(x: 0, y: 0, width: 480, height: 400),
-            [.titled, .closable],
-            "Permission Required"
-        )
-        
-        let permissionView = AccessibilityPermissionView(
+        presenter.showPermissionWindow(
             onOpenSettings: { [weak self] in
                 self?.openSettingsPanel(at: PermissionsService.accessibilitySettingsUrl)
-                self?.permissionWindow?.close()
-            }, onDismiss: { [weak self] in
-                self?.permissionWindow?.close()
+                self?.presenter.closePermissionWindow()
+            },
+            onDismiss: { [weak self] in
+                self?.presenter.closePermissionWindow()
+                self?.quitApp()
             }
         )
+    }
+    
+    func showRestartAlert() {
+        presenter.closePermissionWindow()
         
-        window.contentView = NSHostingView(rootView: permissionView)
-        
-        return window
+        presenter.showRestartWindow(
+            onRestart: { [weak self] in
+                self?.restartApp()
+            },
+            onQuit: { [weak self] in
+                self?.quitApp()
+            }
+        )
     }
     
     func openSettingsPanel(at urlSchema: String) {
@@ -86,5 +79,13 @@ class PermissionsService: @unchecked Sendable {
     
     private func isValidSettingsURL(_ url: URL) -> Bool {
         return url.absoluteString.starts(with: "x-apple.systempreferences")
+    }
+    
+    func userRequestedRestart() {
+        restartApp()
+    }
+    
+    func userRequestedQuit() {
+        quitApp()
     }
 }
