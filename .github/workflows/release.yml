@@ -29,14 +29,14 @@ jobs:
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=NO
 
-      - name: Build Universal Binary
+      - name: Build x86 Binary
         run: |
           xcodebuild -project Cleanable.xcodeproj \
             -scheme Cleanable \
             -configuration Release \
             -arch "x86_64" \
             ONLY_ACTIVE_ARCH=NO \
-            -derivedDataPath ./build-universal \
+            -derivedDataPath ./build-x86 \
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=NO
 
@@ -46,14 +46,14 @@ jobs:
           zip -r ../../../../Cleanable-arm64.zip Cleanable.app
           cd ../../../../
 
-          cd build-universal/Build/Products/Release
-          zip -r ../../../../Cleanable-universal.zip Cleanable.app
+          cd build-x86/Build/Products/Release
+          zip -r ../../../../Cleanable-x86.zip Cleanable.app
           cd ../../../../
 
       - name: Generate Checksums
         run: |
           shasum -a 256 Cleanable-arm64.zip > checksums.txt
-          shasum -a 256 Cleanable-universal.zip >> checksums.txt
+          shasum -a 256 Cleanable-x86.zip >> checksums.txt
           cat checksums.txt
 
       - name: Create Release
@@ -61,13 +61,13 @@ jobs:
         with:
           files: |
             Cleanable-arm64.zip
-            Cleanable-universal.zip
+            Cleanable-x86.zip
             checksums.txt
           body: |
             ## Download
 
             - **Cleanable-arm64.zip** - For Apple Silicon Macs only
-            - **Cleanable-universal.zip** - For both Apple Silicon and Intel Macs
+            - **Cleanable-x86.zip** - For Intel Macs
 
             ## Verification
 
@@ -84,7 +84,7 @@ jobs:
             1. Download the appropriate zip file
             2. Extract and move Cleanable.app to your `Applications` folder
             3. Try to launch the app → Gatekeeper will prevent launch
-            4. Open System Settings → Privacy & Security; scroll all the way down; click on 'Open' next to 'Cleanable'
+            4. Open System Settings → Privacy & Security; scroll all the way down; click on 'Open Anyway'
             5. Grant Accessibility permissions when prompted
             6. Restart the app
           draft: false
