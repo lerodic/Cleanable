@@ -6,6 +6,34 @@ import Testing
 @MainActor
 @Suite("PermissionsService Tests", .serialized)
 struct PermissionsServiceTests {
+    final class MockWindowPresenter: WindowPresenter, @unchecked Sendable {
+        var permissionWindowCreated = false
+        var permissionWindowShown = false
+        var permissionWindowClosed = false
+
+        var restartWindowCreated = false
+        var restartWindowShown = false
+        var restartWindowClosed = false
+
+        override func showPermissionWindow(onOpenSettings: @escaping () -> Void, onDismiss: @escaping () -> Void) {
+            permissionWindowCreated = true
+            permissionWindowShown = true
+        }
+
+        override func closePermissionWindow() {
+            permissionWindowClosed = true
+        }
+
+        override func showRestartWindow(onRestart: @escaping () -> Void, onQuit: @escaping () -> Void) {
+            restartWindowCreated = true
+            restartWindowShown = true
+        }
+
+        override func closeRestartWindow() {
+            restartWindowClosed = true
+        }
+    }
+
     @Test("Accessibility settings URL is formatted correctly")
     func settingsURLHasCorrectFormat() {
         let url = PermissionsService.accessibilitySettingsUrl
@@ -65,140 +93,41 @@ struct PermissionsServiceTests {
 
     @Test("Shows permission window when alert is triggered")
     func showsPermissionWindowWhenAlertIsTriggered() {
-        let service = PermissionsService()
-        var windowCreated = false
-        var windowShown = false
-
-        service.createWindow = { rect, styleMask, title in
-            windowCreated = true
-
-            #expect(title == "Permission Required")
-            #expect(rect.width == 480)
-            #expect(rect.height == 400)
-
-            return NSWindow(
-                contentRect: rect,
-                styleMask: styleMask,
-                backing: .buffered,
-                defer: false
-            )
-        }
-
-        service.showWindow = { _ in
-            windowShown = true
-        }
+        let mockPresenter = MockWindowPresenter()
+        let service = PermissionsService(presenter: mockPresenter)
 
         service.showAccessibilityAlert()
 
-        #expect(windowCreated == true)
-        #expect(windowShown == true)
+        #expect(mockPresenter.permissionWindowCreated == true)
+        #expect(mockPresenter.permissionWindowShown == true)
     }
 
     @Test("Shows alert when permissions have not been granted")
     func requestPermissionsAfterDelay() async {
-        let service = PermissionsService()
-        var alertShown = false
+        let mockPresenter = MockWindowPresenter()
+        let service = PermissionsService(presenter: mockPresenter)
 
         service.hasAccessibilityPermissions = { false }
-
-        service.createWindow = { rect, styleMask, _ in
-            NSWindow(
-                contentRect: rect,
-                styleMask: styleMask,
-                backing: .buffered,
-                defer: false
-            )
-        }
-
-        service.showWindow = { _ in
-            alertShown = true
-        }
 
         service.requestPermissions()
 
         try? await Task.sleep(nanoseconds: 1_500_000_000)
 
-        #expect(alertShown == true)
+        #expect(mockPresenter.permissionWindowShown == true)
     }
 
     @Test("Does not show alert when permissions have already been granted")
     func noAlertWhenPermissionsHaveBeenGranted() async {
-        let service = PermissionsService()
-        var alertShown = false
+        let mockPresenter = MockWindowPresenter()
+        let service = PermissionsService(presenter: mockPresenter)
 
         service.hasAccessibilityPermissions = { true }
-
-        service.showWindow = { _ in
-            alertShown = true
-        }
 
         service.requestPermissions()
 
         try? await Task.sleep(nanoseconds: 1_500_000_000)
 
-        #expect(alertShown == false)
-    }
-
-    @Test("Shows restart window when restart alert is triggered")
-    func showsRestartWindow() {
-        let service = PermissionsService()
-        var windowCreated = false
-        var windowShown = false
-
-        service.createWindow = { rect, styleMask, title in
-            windowCreated = true
-
-            #expect(title == "Restart Required")
-            #expect(rect.width == 400)
-            #expect(rect.height == 280)
-
-            return NSWindow(
-                contentRect: rect,
-                styleMask: styleMask,
-                backing: .buffered,
-                defer: false
-            )
-        }
-
-        service.showWindow = { _ in
-            windowShown = true
-        }
-
-        service.showRestartAlert()
-
-        #expect(windowCreated == true)
-        #expect(windowShown == true)
-    }
-
-    @Test("Restart alert closes permission window")
-    func closePermissionWindow() {
-        let service = PermissionsService()
-        var permissionClosed = false
-        let fakePermissionWindow = NSWindow()
-
-        service.closeWindow = { window in
-            if window === fakePermissionWindow {
-                permissionClosed = true
-            }
-        }
-
-        service.createWindow = { rect, styleMask, title in
-            title == "Permission Required"
-                ? fakePermissionWindow
-                : NSWindow(
-                    contentRect: rect,
-                    styleMask: styleMask,
-                    backing: .buffered,
-                    defer: false
-                )
-        }
-
-        service.showWindow = { _ in }
-
-        service.showAccessibilityAlert()
-        service.showRestartAlert()
-
-        #expect(permissionClosed == true)
+        #expect(mockPresenter.permissionWindowShown == false)
     }
 
     @Test("Restart intent triggers app restart")
