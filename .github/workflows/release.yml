@@ -1,0 +1,93 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "16.1"
+
+      - name: Build ARM64
+        run: |
+          xcodebuild -project Cleanable.xcodeproj \
+            -scheme Cleanable \
+            -configuration Release \
+            -arch arm64 \
+            ONLY_ACTIVE_ARCH=NO \
+            -derivedDataPath ./build-arm64 \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Build Universal Binary
+        run: |
+          xcodebuild -project Cleanable.xcodeproj \
+            -scheme Cleanable \
+            -configuration Release \
+            -arch "arm64 x86_64" \
+            ONLY_ACTIVE_ARCH=NO \
+            -derivedDataPath ./build-universal \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Create Archives
+        run: |
+          cd build-arm64/Build/Products/Release
+          zip -r ../../../../Cleanable-arm64.zip Cleanable.app
+          cd ../../../../
+
+          cd build-universal/Build/Products/Release
+          zip -r ../../../../Cleanable-universal.zip Cleanable.app
+          cd ../../../../
+
+      - name: Generate Checksums
+        run: |
+          shasum -a 256 Cleanable-arm64.zip > checksums.txt
+          shasum -a 256 Cleanable-universal.zip >> checksums.txt
+          cat checksums.txt
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            Cleanable-arm64.zip
+            Cleanable-universal.zip
+            checksums.txt
+          body: |
+            ## Download
+
+            - **Cleanable-arm64.zip** - For Apple Silicon Macs only
+            - **Cleanable-universal.zip** - For both Apple Silicon and Intel Macs
+
+            ## Verification
+
+            SHA-256 checksums are provided in `checksums.txt`.
+
+            To verify your download:
+            ```bash
+            shasum -a 256 Cleanable-arm64.zip
+            # Compare with checksums.txt
+            ```
+
+            ## Installation
+
+            1. Download the appropriate zip file
+            2. Extract and move Cleanable.app to your `Applications` folder
+            3. Try to launch the app → Gatekeeper will prevent launch
+            4. Open System Settings → Privacy & Security; scroll all the way down; click on 'Open' next to 'Cleanable'
+            5. Grant Accessibility permissions when prompted
+            6. Restart the app
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
