@@ -22,7 +22,7 @@ No more unwanted keystrokes while cleaning your MacBook's keyboard!
 1. Download the latest release
 2. Move Cleanable.app to your `Applications` folder
 3. Try to open the app → Gatekeeper will prevent launch
-4. Open System Settings → Privacy & Security; scroll all the way down; click on 'Open' next to 'Cleanable'
+4. Open System Settings → Privacy & Security; scroll all the way down; click on 'Open Anyway'
 5. Grant Accessibility permissions when promted
 6. Restart the app
 
