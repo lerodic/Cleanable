@@ -1,7 +1,7 @@
 import AppKit
 import SwiftUI
 
-class WindowPresenter {
+class WindowPresenter: @unchecked Sendable {
     private var permissionWindow: NSWindow?
     private var restartWindow: NSWindow?
     
