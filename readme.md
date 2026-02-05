@@ -14,7 +14,7 @@ No more unwanted keystrokes while cleaning your MacBook's keyboard!
 
 ## Requirements
 
-- macOS 15.6 or later
+- macOS 15.0 or later
 - Accessibility permissions (required for keyboard monitoring)
 
 ## Installation
