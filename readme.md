@@ -31,7 +31,7 @@ No more unwanted keystrokes while cleaning your MacBook's keyboard!
 ### Toggling keyboard input
 
 - Click the menu bar icon and select "Lock keyboard" / "Unlock keyboard"
-- Or use your configured keyboard shortcut (default: `⌘⌥L`)
+- Or use your configured keyboard shortcut (default: `⌃⌘⌥L`)
 
 The menu bar icon reflects the current lock status:
 
