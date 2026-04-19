@@ -59,7 +59,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         button.image = NSImage(
             systemSymbolName: iconName,
-            accessibilityDescription: isLocked ? "Keyboard is locked" : "Keyboard unlocked"
+            accessibilityDescription: isLocked ? "Input is disabled" : "Input is enabled"
         )
         button.image?.isTemplate = true
     }
@@ -76,7 +76,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         guard let menu = statusItem?.menu else { return }
         
         if let toggleItem = menu.items.first(where: { $0.action == #selector(toggleLock) }) {
-            toggleItem.title = isLocked ? "Unlock keyboard" : "Lock keyboard"
+            toggleItem.title = isLocked ? "Enable input" : "Disable input"
         }
         
         updateStatusBarIcon(isLocked: isLocked)
@@ -103,7 +103,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func makeMenuItems() -> [NSMenuItem] {
         [
             NSMenuItem(
-                title: "Lock keyboard",
+                title: "Disable input",
                 action: #selector(toggleLock),
                 keyEquivalent: ""
             ),
