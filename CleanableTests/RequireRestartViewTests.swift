@@ -4,7 +4,7 @@ import Testing
 import ViewInspector
 
 @MainActor
-@Suite("RequireRestartView Tests", .serialized)
+@Suite(.serialized)
 struct RequireRestartViewTests {
     @Test("Displays icon section correctly")
     func displaysIconSection() throws {
@@ -40,7 +40,7 @@ struct RequireRestartViewTests {
             onRestart: {},
             onQuit: {}
         )
-        let text = "Cleanable needs to restart to active keyboard monitoring."
+        let text = "Cleanable needs to restart to activate keyboard monitoring."
         
         let descriptionText = try view.inspect().find(text: text)
         
