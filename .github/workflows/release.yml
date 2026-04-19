@@ -64,6 +64,12 @@ jobs:
             Cleanable-x86.zip
             checksums.txt
           body: |
+            ## What's new
+
+            - Trackpad locking: trackpad taps are now suppressed while locked
+
+            Since the trackpad is now locked as well, only the designated keyboard shortcut can be used to unlock the keyboard/trackpad once locked.
+
             ## Download
 
             - **Cleanable-arm64.zip** - For Apple Silicon Macs only
