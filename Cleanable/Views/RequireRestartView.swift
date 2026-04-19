@@ -63,7 +63,7 @@ struct RequireRestartContent: View {
                 .fontWeight(.semibold)
                 .multilineTextAlignment(.center)
 
-            Text("Cleanable needs to restart to active keyboard monitoring.")
+            Text("Cleanable needs to restart to activate keyboard monitoring.")
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
