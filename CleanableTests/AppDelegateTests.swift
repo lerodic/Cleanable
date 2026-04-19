@@ -110,7 +110,7 @@ struct AppDelegateTests {
 
         let menu = try #require(delegate.statusItem?.menu)
 
-        #expect(menu.items[0].title == "Lock keyboard")
+        #expect(menu.items[0].title == "Disable input")
         #expect(menu.items[1].title == "Configure shortcut...")
         #expect(menu.items[2].isSeparatorItem)
         #expect(menu.items[3].title == "Quit Cleanable")
@@ -133,11 +133,11 @@ struct AppDelegateTests {
             menu.items.first { $0.action == #selector(AppDelegate.toggleLock) }
         )
 
-        #expect(toggleItem.title == "Lock keyboard")
+        #expect(toggleItem.title == "Disable input")
 
         mockViewModel.toggleLock()
 
-        #expect(toggleItem.title == "Unlock keyboard")
+        #expect(toggleItem.title == "Enable input")
     }
 
     @Test("Toggles lock when tapping on menu item")
