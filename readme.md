@@ -2,14 +2,14 @@
 
 <img src=".github/assets/icon.png" alt="Cleanable icon" width="128" height="128"/>
 
-A lightweight macOS menu bar app that lets you toggle keyboard input with a customizable shortcut.
-No more unwanted keystrokes while cleaning your MacBook's keyboard!
+A lightweight macOS menu bar app that lets you toggle keyboard/trackpad input with a customizable shortcut.
+No more unwanted keystrokes or taps while cleaning your MacBook!
 
 ## Features
 
-- **Quick Lock/Unlock** - Toggle keyboard input with a simple shortcut
+- **Quick Lock/Unlock** - Toggle keyboard/trackpad input with a simple shortcut
 - **Customizable Shortcut** - Customize the dedicated shortcut to your liking
-- **Menu Bar Integration** - Minimal menu bar setup with a keyboard lock status indicator
+- **Menu Bar Integration** - Minimal menu bar setup with a keyboard/trackpad lock status indicator
 - **Lightweight** - Minimal resource usage
 
 ## Requirements
@@ -28,7 +28,7 @@ No more unwanted keystrokes while cleaning your MacBook's keyboard!
 
 ## Usage
 
-### Toggling keyboard input
+### Toggling keyboard/trackpad input
 
 - Click the menu bar icon and select "Lock keyboard" / "Unlock keyboard"
 - Or use your configured keyboard shortcut (default: `⌃⌘⌥L`)

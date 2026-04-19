@@ -13,6 +13,7 @@ class LockViewModel: ObservableObject, @unchecked Sendable {
     var onShortcutChange: (() -> Void)?
     
     private var keyboardMonitor: KeyboardMonitor?
+    private var trackpadMonitor: TrackpadMonitor?
     private let shortcutRecorder: ShortcutRecorder
     
     var shortcutDescription: String {
@@ -28,6 +29,9 @@ class LockViewModel: ObservableObject, @unchecked Sendable {
         if AXIsProcessTrusted() {
             keyboardMonitor = KeyboardMonitor(shortcut: shortcut)
             keyboardMonitor?.delegate = self
+            
+            trackpadMonitor = TrackpadMonitor()
+            trackpadMonitor?.delegate = self
         }
         
         shortcutRecorder.delegate = self
@@ -35,6 +39,7 @@ class LockViewModel: ObservableObject, @unchecked Sendable {
     
     deinit {
         keyboardMonitor = nil
+        trackpadMonitor = nil
     }
     
     private static func initShortcut() -> KeyboardShortcut {
@@ -83,6 +88,12 @@ extension LockViewModel: KeyboardMonitorDelegate {
     }
     
     func keyboardMonitor(_ monitor: KeyboardMonitor, shouldBlockEvent event: NSEvent) -> Bool {
+        return isLocked
+    }
+}
+
+extension LockViewModel: TrackpadMonitorDelegate {
+    func trackpadMonitor(_ monitor: TrackpadMonitor, shouldBlockEvent event: NSEvent) -> Bool {
         return isLocked
     }
 }
