@@ -30,7 +30,7 @@ No more unwanted keystrokes or taps while cleaning your MacBook!
 
 ### Toggling keyboard/trackpad input
 
-- Click the menu bar icon and select "Lock keyboard" / "Unlock keyboard"
+- Click the menu bar icon and select "Enable input" / "Disable input"
 - Or use your configured keyboard shortcut (default: `⌃⌘⌥L`)
 
 The menu bar icon reflects the current lock status:
