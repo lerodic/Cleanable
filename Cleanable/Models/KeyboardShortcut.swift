@@ -5,7 +5,7 @@ struct KeyboardShortcut: Codable, Equatable {
     let keyCode: UInt16
     let modifierFlags: UInt
     
-    // Defaults to "Control" + "Option" + "Command" + "L"
+    /// Defaults to "Control" + "Option" + "Command" + "L"
     static var defaultShortcut: KeyboardShortcut {
         KeyboardShortcut(
             keyCode: 37,
@@ -28,25 +28,16 @@ struct KeyboardShortcut: Codable, Equatable {
     }
     
     private func getModifierKeys() -> [String] {
-        var modifierKeys: [String] = []
+        let modifierKeyMap: KeyValuePairs<String, () -> Bool> = [
+            "⇧": includesShiftKey,
+            "⌃": includesControlKey,
+            "⌥": includesOptionKey,
+            "⌘": includesCommandKey
+        ]
         
-        if includesShiftKey() {
-            modifierKeys.append("⇧")
+        return modifierKeyMap.map { key, fn in
+            fn() ? key : ""
         }
-        
-        if includesControlKey() {
-            modifierKeys.append("⌃")
-        }
-        
-        if includesOptionKey() {
-            modifierKeys.append("⌥")
-        }
-        
-        if includesCommandKey() {
-            modifierKeys.append("⌘")
-        }
-        
-        return modifierKeys
     }
     
     private func includesControlKey() -> Bool {
