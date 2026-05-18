@@ -101,4 +101,49 @@ struct LockViewModelTests {
         
         #expect(hasCallbackBeenInvoked == true)
     }
+    
+    @Test("Returns nil for status item frame when provider is not set")
+    func statusItemFrameWithNoProvider() {
+        let viewModel = LockViewModel()
+        let monitor = TrackpadMonitor()
+
+        let frame = viewModel.trackpadMonitorStatusItemFrame(monitor)
+
+        #expect(frame == nil)
+    }
+
+    @Test("Returns status item frame from provider")
+    func statusItemFrameFromProvider() {
+        let viewModel = LockViewModel()
+        let monitor = TrackpadMonitor()
+        let expectedFrame = CGRect(x: 0, y: 0, width: 100, height: 30)
+
+        viewModel.statusItemFrameProvider = { expectedFrame }
+
+        let frame = viewModel.trackpadMonitorStatusItemFrame(monitor)
+
+        #expect(frame == expectedFrame)
+    }
+
+    @Test("Returns false for status item interaction when provider is not set")
+    func statusItemInteractionWithNoProvider() {
+        let viewModel = LockViewModel()
+        let monitor = TrackpadMonitor()
+
+        let isInteractive = viewModel.trackpadMonitorIsStatusItemInteractive(monitor)
+
+        #expect(isInteractive == false)
+    }
+
+    @Test("Returns status item interaction state from provider")
+    func statusItemInteractionFromProvider() {
+        let viewModel = LockViewModel()
+        let monitor = TrackpadMonitor()
+
+        viewModel.statusItemInteractionProvider = { true }
+
+        let isInteractive = viewModel.trackpadMonitorIsStatusItemInteractive(monitor)
+
+        #expect(isInteractive == true)
+    }
 }

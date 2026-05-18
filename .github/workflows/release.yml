@@ -66,9 +66,10 @@ jobs:
           body: |
             ## What's new
 
-            - Trackpad locking: trackpad taps are now suppressed while locked
-
-            Since the trackpad is now locked as well, only the designated keyboard shortcut can be used to unlock the keyboard/trackpad once locked.
+            - Menu interaction: trackpad taps now work on/within Cleanable's menu  
+              
+            After introducing trackpad locking, Cleanable's menu was unusable while input was disabled.  
+            Input can now be toggled via the keyboard shortcut or via your trackpad/mouse.
 
             ## Download
 
