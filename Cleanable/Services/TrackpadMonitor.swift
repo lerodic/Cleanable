@@ -50,11 +50,38 @@ class TrackpadMonitor {
             return Unmanaged.passUnretained(event)
         }
 
+        if isClickOnStatusItem(event) {
+            return Unmanaged.passUnretained(event)
+        }
+
         if delegate?.trackpadMonitor(self, shouldBlockEvent: nsEvent) == true {
             return nil
         }
 
         return Unmanaged.passUnretained(event)
+    }
+
+    private func isClickOnStatusItem(_ event: CGEvent) -> Bool {
+        if delegate?.trackpadMonitorIsStatusItemInteractive(self) == true {
+            return true
+        }
+
+        guard let frame = delegate?.trackpadMonitorStatusItemFrame(self) else { return false }
+
+        // correct origin mismatch for vertical position
+        // AppKit uses top-left, whereas Core Graphics uses bottom-left
+        let location = flippedLocation(of: event)
+
+        return frame.contains(location)
+    }
+
+    private func flippedLocation(of event: CGEvent) -> CGPoint {
+        guard let screenHeight = NSScreen.screens.first?.frame.height else { return event.location }
+
+        return CGPoint(
+            x: event.location.x,
+            y: screenHeight - event.location.y
+        )
     }
 
     private func startMonitoring() {
