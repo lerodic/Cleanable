@@ -6,9 +6,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var permissionsService: PermissionsService
     private var viewModelFactory: () -> LockViewModel
     
-    private(set) var statusItem: NSStatusItem?
+    private var statusItemController: StatusItemController?
+    private var shortcutWindowController: ShortcutWindowController?
     private var viewModel: LockViewModel?
-    private var shortcutWindow: NSWindow?
     private var accessibilityPollTimer: Timer?
     
     override init() {
@@ -29,13 +29,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.timerScheduler = timerScheduler
     }
     
+    var statusItemMenu: NSMenu? {
+        statusItemController?.menu
+    }
+    
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupApplication()
-        createStatusItem()
         
         if permissionsService.hasAccessibilityPermissions() {
-            initializeViewModel()
-            setupMenu()
+            activate()
         } else {
             permissionsService.requestPermissions()
             startAccessibilityPolling()
@@ -44,111 +46,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     private func setupApplication() {
         NSApp.setActivationPolicy(.accessory)
+        statusItemController = StatusItemController()
     }
     
-    private func createStatusItem() {
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        
-        updateStatusBarIcon(isLocked: false)
-    }
-    
-    private func updateStatusBarIcon(isLocked: Bool) {
-        guard let button = statusItem?.button else { return }
-        
-        let iconName = isLocked ? "lock.fill" : "lock.open.fill"
-        
-        button.image = NSImage(
-            systemSymbolName: iconName,
-            accessibilityDescription: isLocked ? "Input is disabled" : "Input is enabled"
-        )
-        button.image?.isTemplate = true
-    }
-    
-    private func initializeViewModel() {
+    private func activate() {
         viewModel = viewModelFactory()
         
-        viewModel?.onStateChange = { [weak self] isLocked in
-            self?.updateMenu(isLocked: isLocked)
-        }
-    }
-    
-    private func updateMenu(isLocked: Bool) {
-        guard let menu = statusItem?.menu else { return }
+        shortcutWindowController = ShortcutWindowController(viewModel: viewModel!)
         
-        if let toggleItem = menu.items.first(where: { $0.action == #selector(toggleLock) }) {
-            toggleItem.title = isLocked ? "Enable input" : "Disable input"
-        }
-        
-        updateStatusBarIcon(isLocked: isLocked)
-    }
-    
-    @objc func toggleLock() {
-        viewModel?.toggleLock()
-    }
-    
-    func setupMenu() {
-        let menu = NSMenu()
-        
-        for (index, menuItem) in makeMenuItems().enumerated() {
-            if index < 2 {
-                menuItem.target = self
-            }
-            
-            menu.addItem(menuItem)
-        }
-        
-        statusItem?.menu = menu
-    }
-    
-    private func makeMenuItems() -> [NSMenuItem] {
-        [
-            NSMenuItem(
-                title: "Disable input",
-                action: #selector(toggleLock),
-                keyEquivalent: ""
-            ),
-            NSMenuItem(
-                title: "Configure shortcut...",
-                action: #selector(openShortcutSettings),
-                keyEquivalent: ","
-            ),
-            NSMenuItem.separator(),
-            NSMenuItem(
-                title: "Quit Cleanable",
-                action: #selector(NSApplication.terminate(_:)),
-                keyEquivalent: "q"
-            )
-        ]
-    }
-    
-    @objc private func openShortcutSettings() {
-        if shortcutWindow == nil {
-            createShortcutWindow()
-        }
-        
-        shortcutWindow?.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
-    }
-    
-    private func createShortcutWindow() {
-        let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 400, height: 200),
-            styleMask: [.titled, .closable],
-            backing: .buffered,
-            defer: false
+        statusItemController?.setupMenu(
+            onToggleLock: { [weak self] in self?.viewModel?.toggleLock() },
+            onOpenSettings: { [weak self] in self?.shortcutWindowController?.show() }
         )
         
-        window.title = "Configure shortcut"
-        window.center()
-        window.isReleasedWhenClosed = false
-        
-        if let viewModel = viewModel {
-            let settingsView = ShortcutSettingsView(viewModel: viewModel)
-            
-            window.contentView = NSHostingView(rootView: settingsView)
+        viewModel!.onStateChange = { [weak self] isLocked in
+            self?.statusItemController?.update(isLocked: isLocked)
         }
-        
-        shortcutWindow = window
     }
     
     func startAccessibilityPolling() {
