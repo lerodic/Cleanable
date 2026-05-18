@@ -11,6 +11,8 @@ class LockViewModel: ObservableObject, @unchecked Sendable {
     
     var onStateChange: ((Bool) -> Void)?
     var onShortcutChange: (() -> Void)?
+    var statusItemFrameProvider: (() -> CGRect?)?
+    var statusItemInteractionProvider: (() -> Bool)?
     
     private var keyboardMonitor: KeyboardMonitor?
     private var trackpadMonitor: TrackpadMonitor?
@@ -88,13 +90,21 @@ extension LockViewModel: KeyboardMonitorDelegate {
     }
     
     func keyboardMonitor(_ monitor: KeyboardMonitor, shouldBlockEvent event: NSEvent) -> Bool {
-        return isLocked
+        isLocked
     }
 }
 
 extension LockViewModel: TrackpadMonitorDelegate {
     func trackpadMonitor(_ monitor: TrackpadMonitor, shouldBlockEvent event: NSEvent) -> Bool {
-        return isLocked
+        isLocked
+    }
+    
+    func trackpadMonitorStatusItemFrame(_ monitor: TrackpadMonitor) -> CGRect? {
+        statusItemFrameProvider?()
+    }
+    
+    func trackpadMonitorIsStatusItemInteractive(_ monitor: TrackpadMonitor) -> Bool {
+        statusItemInteractionProvider?() ?? false
     }
 }
 
