@@ -193,4 +193,37 @@ struct AppDelegateTests {
 
         #expect(mockService.showRestartAlertCalled)
     }
+    
+    @Test("Status item frame provider is wired to status item controller")
+    func statusItemFrameProviderIsWired() throws {
+        let mockService = MockPermissionsService()
+        mockService.hasPermissions = true
+
+        let mockViewModel = MockLockViewModel()
+
+        let delegate = AppDelegate(permissionsService: mockService, viewModelFactory: { mockViewModel })
+        delegate.applicationDidFinishLaunching(
+            Notification(name: NSApplication.didFinishLaunchingNotification)
+        )
+
+        _ = mockViewModel.statusItemFrameProvider?()
+        
+        #expect(mockViewModel.statusItemFrameProvider != nil)
+    }
+
+    @Test("Status item interaction provider reflects menu open state")
+    func statusItemInteractionProviderReflectsMenuOpenState() throws {
+        let mockService = MockPermissionsService()
+        mockService.hasPermissions = true
+
+        let mockViewModel = MockLockViewModel()
+
+        let delegate = AppDelegate(permissionsService: mockService, viewModelFactory: { mockViewModel })
+        delegate.applicationDidFinishLaunching(
+            Notification(name: NSApplication.didFinishLaunchingNotification)
+        )
+
+        #expect(mockViewModel.statusItemInteractionProvider != nil)
+        #expect(mockViewModel.statusItemInteractionProvider?() == false)
+    }
 }
