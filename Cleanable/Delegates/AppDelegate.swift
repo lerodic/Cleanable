@@ -59,6 +59,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             onOpenSettings: { [weak self] in self?.shortcutWindowController?.show() }
         )
         
+        viewModel!.statusItemFrameProvider = { [weak self] in
+            self?.statusItemController?.frame()
+        }
+        
+        viewModel!.statusItemInteractionProvider = { [weak self] in
+            self?.statusItemController?.isMenuOpen == true
+        }
+        
         viewModel!.onStateChange = { [weak self] isLocked in
             self?.statusItemController?.update(isLocked: isLocked)
         }
