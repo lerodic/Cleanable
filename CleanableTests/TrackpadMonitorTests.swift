@@ -22,6 +22,8 @@ struct TrackpadMonitorTests {
     class MockTrackpadMonitorDelegate: TrackpadMonitorDelegate {
         var shouldBlockEvent = false
         var blockedEventCount = 0
+        var statusItemFrame: CGRect?
+        var isStatusItemInteractive = false
         
         func trackpadMonitor(_ monitor: TrackpadMonitor, shouldBlockEvent event: NSEvent) -> Bool {
             if shouldBlockEvent {
@@ -29,6 +31,14 @@ struct TrackpadMonitorTests {
             }
             
             return shouldBlockEvent
+        }
+        
+        func trackpadMonitorStatusItemFrame(_ monitor: TrackpadMonitor) -> CGRect? {
+            statusItemFrame
+        }
+        
+        func trackpadMonitorIsStatusItemInteractive(_ monitor: TrackpadMonitor) -> Bool {
+            isStatusItemInteractive
         }
     }
     
@@ -50,7 +60,7 @@ struct TrackpadMonitorTests {
         #expect(isDisabled == true)
     }
     
-    @Test("Pass through events when delegate allows it")
+    @Test("Passes through events when delegate allows it")
     func passesEventThroughWhenNotBlocked() throws {
         let monitor = TrackpadMonitor()
         let delegate = MockTrackpadMonitorDelegate()
@@ -100,7 +110,7 @@ struct TrackpadMonitorTests {
         #expect(delegate.blockedEventCount == blockedTypes.count)
     }
         
-    @Test("Pass through event with no delegate set")
+    @Test("Passes through event with no delegate set")
     func passesEventThroughWithNoDelegate() throws {
         let monitor = TrackpadMonitor()
             
@@ -123,5 +133,70 @@ struct TrackpadMonitorTests {
         }
 
         #expect(delegate.blockedEventCount == 5)
+    }
+    
+    @Test("Passes through event when click is inside status item frame")
+    func passesEventThroughInsideStatusItemFrame() throws {
+        let monitor = TrackpadMonitor()
+        let delegate = MockTrackpadMonitorDelegate()
+        delegate.shouldBlockEvent = true
+        monitor.delegate = delegate
+        
+        let screenHeight = try #require(NSScreen.screens.first?.frame.height)
+        let clickPosition = CGPoint(x: 50, y: screenHeight - 10)
+        delegate.statusItemFrame = CGRect(x: 0, y: 0, width: 100, height: 30)
+        
+        let cgEvent = try #require(
+            CGEvent(
+                mouseEventSource: nil,
+                mouseType: .leftMouseDown,
+                mouseCursorPosition: clickPosition,
+                mouseButton: .left
+            )
+        )
+        
+        let result = monitor.handle(event: cgEvent, ofType: .leftMouseDown)
+        
+        #expect(result != nil)
+        #expect(delegate.blockedEventCount == 0)
+    }
+    
+    @Test("Blocks event when click is outside status item frame")
+    func blocksEventWhenOutsideStatusItemFrame() throws {
+        let monitor = TrackpadMonitor()
+        let delegate = MockTrackpadMonitorDelegate()
+        delegate.shouldBlockEvent = true
+        monitor.delegate = delegate
+
+        let screenHeight = try #require(NSScreen.screens.first?.frame.height)
+        let clickPosition = CGPoint(x: 50, y: screenHeight - 10)
+        delegate.statusItemFrame = CGRect(x: 200, y: 0, width: 100, height: 30)
+
+        let cgEvent = try #require(CGEvent(
+            mouseEventSource: nil,
+            mouseType: .leftMouseDown,
+            mouseCursorPosition: clickPosition,
+            mouseButton: .left
+        ))
+
+        let result = monitor.handle(event: cgEvent, ofType: .leftMouseDown)
+
+        #expect(result == nil)
+        #expect(delegate.blockedEventCount == 1)
+    }
+    
+    @Test("Passes through event when status item menu is open")
+    func passesEventThroughWhenStatusItemMenuIsOpen() throws {
+        let monitor = TrackpadMonitor()
+        let delegate = MockTrackpadMonitorDelegate()
+        delegate.shouldBlockEvent = true
+        delegate.isStatusItemInteractive = true
+        monitor.delegate = delegate
+
+        let cgEvent = try #require(makeCGMouseEvent(type: .leftMouseDown))
+        let result = monitor.handle(event: cgEvent, ofType: .leftMouseDown)
+
+        #expect(result != nil)
+        #expect(delegate.blockedEventCount == 0)
     }
 }
