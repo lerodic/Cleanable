@@ -108,7 +108,7 @@ struct AppDelegateTests {
 
         delegate.applicationDidFinishLaunching(notification)
 
-        let menu = try #require(delegate.statusItem?.menu)
+        let menu = try #require(delegate.statusItemMenu)
 
         #expect(menu.items[0].title == "Disable input")
         #expect(menu.items[1].title == "Configure shortcut...")
@@ -128,31 +128,29 @@ struct AppDelegateTests {
 
         delegate.applicationDidFinishLaunching(notification)
 
-        let menu = try #require(delegate.statusItem?.menu)
-        let toggleItem = try #require(
-            menu.items.first { $0.action == #selector(AppDelegate.toggleLock) }
-        )
+        let menu = try #require(delegate.statusItemMenu)
 
-        #expect(toggleItem.title == "Disable input")
+        #expect(menu.items[0].title == "Disable input")
 
         mockViewModel.toggleLock()
 
-        #expect(toggleItem.title == "Enable input")
+        #expect(menu.items[0].title == "Enable input")
     }
 
     @Test("Toggles lock when tapping on menu item")
-    func toggleLockOnMenuItemTap() {
+    func toggleLockOnMenuItemTap() throws {
         let mockService = MockPermissionsService()
         mockService.hasPermissions = true
 
         let mockViewModel = MockLockViewModel()
 
         let delegate = AppDelegate(permissionsService: mockService, viewModelFactory: { mockViewModel })
-        let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
+        delegate.applicationDidFinishLaunching(
+            Notification(name: NSApplication.didFinishLaunchingNotification)
+        )
 
-        delegate.applicationDidFinishLaunching(notification)
-
-        delegate.perform(#selector(AppDelegate.toggleLock))
+        let toggleItem = try #require(delegate.statusItemMenu?.items.first)
+        toggleItem.actionHandler?()
 
         #expect(mockViewModel.toggleLockCalled)
     }
