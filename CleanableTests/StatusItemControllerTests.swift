@@ -19,7 +19,7 @@ struct StatusItemControllerTests {
         controller.setupMenu(onToggleLock: {}, onOpenSettings: {})
 
         let menu = try #require(controller.menu)
-        
+
         #expect(menu.items[0].title == "Disable input")
         #expect(menu.items[1].title == "Configure shortcut...")
         #expect(menu.items[2].isSeparatorItem)
@@ -34,7 +34,7 @@ struct StatusItemControllerTests {
         controller.update(isLocked: true)
 
         let menu = try #require(controller.menu)
-        
+
         #expect(menu.items.first?.title == "Enable input")
     }
 
@@ -47,7 +47,7 @@ struct StatusItemControllerTests {
         controller.update(isLocked: false)
 
         let menu = try #require(controller.menu)
-        
+
         #expect(menu.items.first?.title == "Disable input")
     }
 
@@ -104,5 +104,30 @@ struct StatusItemControllerTests {
         menu.items[1].actionHandler?()
 
         #expect(openSettingsCalled)
+    }
+
+    @Test("Shortcut menu item is disabled when locked")
+    func shortcutMenuDisabledWhenLocked() throws {
+        let controller = StatusItemController()
+        controller.setupMenu(onToggleLock: {}, onOpenSettings: {})
+
+        controller.update(isLocked: true)
+
+        let menu = try #require(controller.menu)
+
+        #expect(menu.items[1].isEnabled == false)
+    }
+
+    @Test("Shortcut menu item is enabled when unlocked")
+    func shortcutMenuEnabledWhenUnlocked() throws {
+        let controller = StatusItemController()
+        controller.setupMenu(onToggleLock: {}, onOpenSettings: {})
+
+        controller.update(isLocked: true)
+        controller.update(isLocked: false)
+
+        let menu = try #require(controller.menu)
+
+        #expect(menu.items[1].isEnabled == true)
     }
 }
