@@ -66,10 +66,7 @@ jobs:
           body: |
             ## What's new
 
-            - Menu interaction: trackpad taps now work on/within Cleanable's menu  
-              
-            After introducing trackpad locking, Cleanable's menu was unusable while input was disabled.  
-            Input can now be toggled via the keyboard shortcut or via your trackpad/mouse.
+            - Fix: Keyboard shortcut menu is now disabled if input is disabled
 
             ## Download
 
