@@ -27,6 +27,7 @@ class StatusItemController {
         onOpenSettings: @escaping () -> Void
     ) {
         let menu = MenuFactory.make(onToggleLock: onToggleLock, onOpenSettings: onOpenSettings)
+        menu.autoenablesItems = false
         
         setupListeners(for: menu)
         
@@ -60,6 +61,11 @@ class StatusItemController {
     func update(isLocked: Bool) {
         updateIcon(isLocked: isLocked)
         updateToggleTitle(isLocked: isLocked)
+        toggleShortcutMenu(isLocked: isLocked)
+    }
+    
+    private func toggleShortcutMenu(isLocked: Bool) {
+        menu?.items[1].isEnabled = !isLocked
     }
     
     private func updateToggleTitle(isLocked: Bool) {
