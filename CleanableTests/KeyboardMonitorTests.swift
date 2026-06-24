@@ -5,6 +5,23 @@ import Testing
 
 @Suite("KeyboardMonitor Tests")
 struct KeyboardMonitorTests {
+    func makeSystemDefinedEvent(keyType: Int, subtype: Int16 = 8) -> CGEvent {
+        let data1 = (keyType << 16) | 0xa00
+        let nsEvent = NSEvent.otherEvent(
+            with: .systemDefined,
+            location: .zero,
+            modifierFlags: [],
+            timestamp: 0,
+            windowNumber: 0,
+            context: nil,
+            subtype: subtype,
+            data1: data1,
+            data2: -1
+        )!
+     
+        return nsEvent.cgEvent!
+    }
+    
     class MockKeyboardMonitorDelegate: KeyboardMonitorDelegate {
         var shortcutDetectedCount = 0
         var lastDetectedShortcut: KeyboardShortcut?
@@ -171,5 +188,31 @@ struct KeyboardMonitorTests {
         #expect(result == nil)
         #expect(delegate.shortcutDetectedCount == 1)
         #expect(delegate.lastDetectedShortcut == testCase.newShortcut)
+    }
+    
+    @Test("Blocks audio keys when locked", arguments: audioKeyFixtures)
+    func blocksAudioKeysWhenLocked(_ testCase: AudioKeyCase) throws {
+        let monitor = KeyboardMonitor(shortcut: .defaultShortcut)
+        let delegate = MockKeyboardMonitorDelegate()
+        delegate.shouldBlockEvent = true
+        monitor.delegate = delegate
+        let event = makeSystemDefinedEvent(keyType: testCase.keyType)
+
+        let result = try monitor.handle(event: event, ofType: #require(CGEventType(rawValue: 14)))
+
+        #expect(result == nil)
+    }
+
+    @Test("Passes audio keys when unlocked", arguments: audioKeyFixtures)
+    func passesAudioKeysWhenUnlocked(_ testCase: AudioKeyCase) throws {
+        let monitor = KeyboardMonitor(shortcut: .defaultShortcut)
+        let delegate = MockKeyboardMonitorDelegate()
+        delegate.shouldBlockEvent = false
+        monitor.delegate = delegate
+        let event = makeSystemDefinedEvent(keyType: testCase.keyType)
+        
+        let result = try monitor.handle(event: event, ofType: #require(CGEventType(rawValue: 14)))
+
+        #expect(result != nil)
     }
 }
