@@ -182,3 +182,19 @@ let updateShortcutAndRecognizeFixtures: [UpdateShortcutAndRecognizeCase] = [
         event: makeCGEvent(keyCode: 21, flags: [.maskAlternate])
     )
 ]
+
+struct AudioKeyCase {
+    let name: String
+    let keyType: Int
+}
+
+let audioKeyFixtures: [AudioKeyCase] = [
+    .init(name: "volume up", keyType: 0),
+    .init(name: "volume down", keyType: 1),
+    .init(name: "mute", keyType: 7),
+    .init(name: "play", keyType: 16),
+    .init(name: "next", keyType: 17),
+    .init(name: "previous", keyType: 18),
+    .init(name: "fast forward", keyType: 19),
+    .init(name: "rewind", keyType: 20)
+]

@@ -66,7 +66,7 @@ jobs:
           body: |
             ## What's new
 
-            - Fix: Keyboard shortcut menu is now disabled if input is disabled
+            - Feature: All keys can now be intercepted, including Fn keys
 
             ## Download
 
