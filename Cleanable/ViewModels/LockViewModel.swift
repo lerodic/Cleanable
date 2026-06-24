@@ -59,6 +59,7 @@ class LockViewModel: ObservableObject, @unchecked Sendable {
     func toggleLock() {
         isLocked.toggle()
         
+        keyboardMonitor?.setFnKeysAsStandard(isLocked)
         onStateChange?(isLocked)
     }
     
