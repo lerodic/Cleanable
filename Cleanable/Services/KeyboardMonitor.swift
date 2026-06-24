@@ -5,7 +5,10 @@ class KeyboardMonitor {
     weak var delegate: KeyboardMonitorDelegate?
     
     private static var eventMask: CGEventMask {
-        return (1 << CGEventType.keyDown.rawValue) | (1 << CGEventType.keyUp.rawValue)
+        return (1 << CGEventType.keyDown.rawValue)
+            | (1 << CGEventType.keyUp.rawValue)
+            | (1 << CGEventType.flagsChanged.rawValue)
+            | (1 << 14)
     }
     
     private static let eventTapCallback: CGEventTapCallBack = { _, type, event, refcon in
