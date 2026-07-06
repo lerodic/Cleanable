@@ -13,13 +13,18 @@ class KeyboardMonitor {
         case rewind = 20
     }
     
+    private static let systemDefinedEventType: UInt32 = 14
+    private static let auxControlButtonSubtype: Int16 = 8
+    private static let keyDataMask: Int = 0xFFFF0000
+    private static let keyDataShift: Int = 16
+    
     weak var delegate: KeyboardMonitorDelegate?
     
     private static var eventMask: CGEventMask {
         return (1 << CGEventType.keyDown.rawValue)
             | (1 << CGEventType.keyUp.rawValue)
             | (1 << CGEventType.flagsChanged.rawValue)
-            | (1 << 14)
+            | (1 << systemDefinedEventType)
     }
     
     private static let eventTapCallback: CGEventTapCallBack = { _, type, event, refcon in
@@ -141,15 +146,18 @@ class KeyboardMonitor {
     }
     
     private func isAudioKey(_ type: CGEventType) -> Bool {
-        return type.rawValue == 14
+        return type.rawValue == KeyboardMonitor.systemDefinedEventType
     }
     
     private func handleAudioKey(_ event: CGEvent) -> Unmanaged<CGEvent>? {
-        guard let nsEvent = NSEvent(cgEvent: event), nsEvent.subtype.rawValue == 8 else {
+        guard let nsEvent =
+            NSEvent(cgEvent: event),
+            nsEvent.subtype.rawValue == KeyboardMonitor.auxControlButtonSubtype
+        else {
             return Unmanaged.passUnretained(event)
         }
 
-        let keyType = (nsEvent.data1 & 0xFFFF0000) >> 16
+        let keyType = (nsEvent.data1 & KeyboardMonitor.keyDataMask) >> KeyboardMonitor.keyDataShift
         
         return MediaKeyType(rawValue: keyType) != nil
             ? nil
