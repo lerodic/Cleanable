@@ -22,11 +22,15 @@ struct AppDelegateTests {
         }
 
         override func requestPermissions() {
-            requestPermissionsCalled = true
+            MainActor.assumeIsolated {
+                requestPermissionsCalled = true
+            }
         }
 
         override func showRestartAlert() {
-            showRestartAlertCalled = true
+            MainActor.assumeIsolated {
+                showRestartAlertCalled = true
+            }
         }
     }
 
